@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: med
+  data:
+    redis:
+      host: 192.168.1.242
+      database: 3
+  datasource:
+    hikari:
+      username: root
+      password: test123456
+    url: "jdbc:mysql://192.168.1.242:3306/med"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+    host: 192.168.1.242
+    port: 5672
+
+influxdb:
+  url: "http://192.168.1.242:8086"
+  username: admin
+  password: "*Test123456"
