@@ -4,7 +4,6 @@ spring:
   data:
     redis:
       host: 192.168.1.242
-      database: 3
   datasource:
     hikari:
       username: root
@@ -19,3 +18,6 @@ influxdb:
   url: "http://192.168.1.242:8086"
   username: admin
   password: "*Test123456"
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
