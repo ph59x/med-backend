@@ -133,23 +133,23 @@ public class InfluxService {
                 case "afm":
                     dp.setAfm(((Number)value).shortValue());
                     break;
+                case "afmFlag":
+                    dp.setAfmFlag((Boolean)value);
+                    break;
+                case "fmFlag":
+                    dp.setFmFlag((Boolean)value);
+                    break;
                 case "fhr":
                     dp.setFhr(((Number)value).shortValue());
                     break;
                 case "fhrQuality":
                     dp.setFhrQuality(((Number)value).byteValue());
                     break;
-                case "isAfm":
-                    dp.setIsAfm((Boolean)value);
-                    break;
-                case "isFm":
-                    dp.setIsFm((Boolean)value);
-                    break;
-                case "isToco":
-                    dp.setIsToco((Boolean)value);
-                    break;
                 case "toco":
                     dp.setToco(((Number)value).shortValue());
+                    break;
+                case "tocoFlag":
+                    dp.setTocoFlag((Boolean)value);
                     break;
             }
             // TODO 返回带时区的时间

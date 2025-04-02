@@ -9,14 +9,14 @@ import java.time.ZonedDateTime;
 @Data
 public class DataPoint {
     private Short afm;
-    private Boolean isAfm;
-    private Boolean isFm;
+    private Boolean afmFlag;
+    private Boolean fmFlag;
 
     private Short fhr;
     private Byte fhrQuality;
 
     private Short toco;
-    private Boolean isToco;
+    private Boolean tocoFlag;
 
     private ZonedDateTime time;
 
@@ -26,11 +26,11 @@ public class DataPoint {
         if (afm != null) {
             p.addField("afm",  afm.longValue());
         }
-        if (isAfm != null) {
-            p.addField("isAfm",  isAfm);
+        if (afmFlag != null) {
+            p.addField("afmFlag", afmFlag);
         }
-        if (isFm != null) {
-            p.addField("isFm",  isFm);
+        if (fmFlag != null) {
+            p.addField("fmFlag", fmFlag);
         }
         if (fhr != null) {
             p.addField("fhr",  fhr.longValue());
@@ -41,8 +41,8 @@ public class DataPoint {
         if (toco != null) {
             p.addField("toco",  toco.longValue());
         }
-        if (isToco != null) {
-            p.addField("isToco",  isToco);
+        if (tocoFlag != null) {
+            p.addField("tocoFlag", tocoFlag);
         }
         p.time(time.toInstant(), WritePrecision.S);
         
