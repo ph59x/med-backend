@@ -109,7 +109,7 @@ public class InfluxService {
         String query = "from(bucket: \"demodata\")\n" +
                 "  |> range(start: " + formatter.format(start) +", stop: " + formatter.format(end) + ")\n" +
                 "  |> filter(fn: (r) => r[\"_measurement\"] == \"" + MEASUREMENT +"\")\n" +
-                "  |> filter(fn: (r) => r[\"uid\"] == \"1\")\n" +
+                "  |> filter(fn: (r) => r[\"uid\"] == \"" + uid + "\")\n" +
                 "  |> aggregateWindow(every: 1s, fn: last, createEmpty: false)\n" +
                 "  |> yield(name: \"last\")";
 
