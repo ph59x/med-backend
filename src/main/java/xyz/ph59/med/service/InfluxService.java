@@ -18,8 +18,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import xyz.ph59.med.entity.DataPoint;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -101,6 +105,40 @@ public class InfluxService {
         for (DataPoint data : datas) {
             writer.writePoint(data.convertToPoint(MEASUREMENT).addTag("uid", Integer.toString(uid)));
         }
+    }
+
+    public List<Short[]> queryForEval(int uid, ZonedDateTime start, ZonedDateTime end) {
+        QueryApi queryApi = influxDBClient.getQueryApi();
+
+        String query = "from(bucket: \"demodata\")\n" +
+                "  |> range(start: " + formatter.format(start) +", stop: " + formatter.format(end) + ")\n" +
+                "  |> filter(fn: (r) => r[\"_measurement\"] == \"" + MEASUREMENT +"\")\n" +
+                "  |> filter(fn: (r) => r[\"_field\"] == \"fhr\" or r[\"_field\"] == \"toco\")" +
+                "  |> filter(fn: (r) => r[\"uid\"] == \"" + uid + "\")\n" +
+                "  |> aggregateWindow(every: 1s, fn: last, createEmpty: false)\n" +
+                "  |> yield(name: \"last\")";
+
+        List<FluxTable> queryResult = queryApi.query(query);
+
+        Map<Instant, Map<String, Short>> timeSeriesMap = new HashMap<>();
+        for (FluxTable table : queryResult) {
+            for (FluxRecord record : table.getRecords())  {
+                Instant time = (Instant) record.getValueByKey("_time");
+                String field = record.getValueByKey("_field").toString();
+                Number value = (Number) record.getValueByKey("_value");
+
+                timeSeriesMap.computeIfAbsent(time,  k -> new HashMap<>())
+                        .put(field, value.shortValue());
+            }
+        }
+
+        return timeSeriesMap.keySet().stream()
+                .sorted()
+                .map(time -> new Short[]{
+                        timeSeriesMap.get(time).get("fhr"),
+                        timeSeriesMap.get(time).get("toco")
+                })
+                .collect(Collectors.toList());
     }
 
     public List<DataPoint> query(int uid, ZonedDateTime start, ZonedDateTime end) {
