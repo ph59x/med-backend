@@ -40,6 +40,8 @@ public class InfluxService {
     private InfluxDBClient influxDBClient;
     private WriteApi writer;
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx");
+
     public InfluxService(Environment springEnv, ConfigurableApplicationContext context) {
         this.springEnv = springEnv;
         this.context = context;
@@ -105,7 +107,7 @@ public class InfluxService {
         QueryApi queryApi = influxDBClient.getQueryApi();
 
         String query = "from(bucket: \"demodata\")\n" +
-                "  |> range(start: " + start +", stop: " + end + ")\n" +
+                "  |> range(start: " + formatter.format(start) +", stop: " + formatter.format(end) + ")\n" +
                 "  |> filter(fn: (r) => r[\"_measurement\"] == \"" + MEASUREMENT +"\")\n" +
                 "  |> filter(fn: (r) => r[\"uid\"] == \"1\")\n" +
                 "  |> aggregateWindow(every: 1s, fn: last, createEmpty: false)\n" +
