@@ -1,11 +1,6 @@
 package xyz.ph59.med.controller;
 
-import com.alibaba.fastjson2.JSON;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageBuilder;
-import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,23 +8,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import xyz.ph59.med.config.RabbitConfig;
 import xyz.ph59.med.entity.Result;
-import xyz.ph59.med.service.InfluxService;
+import xyz.ph59.med.service.EvalService;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/eval")
 @RequiredArgsConstructor
 public class EvalController {
-    private final RabbitTemplate rabbitTemplate;
-    private final InfluxService influxService;
+    private final EvalService evalService;
 
     @PostMapping
     public ResponseEntity<Result> createEvalTask(@RequestParam("start") String startTimeStr,
@@ -48,25 +38,19 @@ public class EvalController {
             );
         }
 
-        // TODO 指定UID与请求发起者不同时的权限检查
         if (uid == null) {
             uid = (int) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         }
+        // TODO 指定UID与请求发起者不同时的权限检查
 
-        List<Short[]> messageData = influxService.queryForEval(uid, start, end);
-        UUID messageId = UUID.randomUUID();
-        Message message = MessageBuilder.withBody(JSON.toJSONBytes(messageData))
-                .setMessageId(String.valueOf(messageId))
-                .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-                .setContentEncoding("UTF-8")
-                .setTimestamp(Date.from(Instant.now()))
-                .build();
+        UUID taskId = evalService.createTask(uid, start, end);
 
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, RabbitConfig.ROUTING_KEY, message);
+        // TODO 任务创建故障处理
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Result.builder(HttpStatus.CREATED)
                         .message("Created evaluation task.")
-                        .data(messageId)
+                        .data(taskId)
                         .build()
                 );
     }
