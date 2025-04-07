@@ -22,21 +22,20 @@ public class EvalService {
     private final InfluxService influxService;
 
     // TODO 故障处理
-    public UUID createTask(int uid, ZonedDateTime start, ZonedDateTime end) {
+    public Object createTask(int uid, ZonedDateTime start, ZonedDateTime end) {
         //查询数据
         List<Short[]> messageData = influxService.queryForEval(uid, start, end);
 
         //构建并发送消息
         UUID messageId = UUID.randomUUID();
         Message message = MessageBuilder.withBody(JSON.toJSONBytes(messageData))
-                .setMessageId(String.valueOf(messageId))
+                .setCorrelationId(String.valueOf(messageId))
                 .setContentType(MessageProperties.CONTENT_TYPE_JSON)
                 .setContentEncoding("UTF-8")
                 .setTimestamp(Date.from(Instant.now()))
+                .setReplyTo("amq.rabbitmq.reply-to")
                 .build();
 
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, RabbitConfig.ROUTING_KEY, message);
-
-        return messageId;
+        return rabbitTemplate.convertSendAndReceive(RabbitConfig.EXCHANGE_NAME, RabbitConfig.ROUTING_KEY, message);
     }
 }

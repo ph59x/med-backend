@@ -13,7 +13,6 @@ import xyz.ph59.med.service.EvalService;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/eval")
@@ -43,15 +42,22 @@ public class EvalController {
         }
         // TODO 指定UID与请求发起者不同时的权限检查
 
-        UUID taskId = evalService.createTask(uid, start, end);
+        try {
+            Object result = evalService.createTask(uid, start, end);
 
-        // TODO 任务创建故障处理
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Result.builder(HttpStatus.CREATED)
-                        .message("Created evaluation task.")
-                        .data(taskId)
-                        .build()
-                );
+            return ResponseEntity.ok(Result.builder(HttpStatus.OK)
+                            .message("评估完成")
+                            .data(result)
+                            .build()
+                    );
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Result.builder(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .message("评估调用超时")
+                            .build()
+                    );
+        }
     }
 }
