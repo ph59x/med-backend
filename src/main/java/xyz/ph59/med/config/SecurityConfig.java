@@ -1,5 +1,6 @@
 package xyz.ph59.med.config;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import xyz.ph59.med.filter.JwtFilter;
 import xyz.ph59.med.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
@@ -21,16 +22,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable())
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .addFilterBefore(new JwtFilter(jwtUtil),
+//                        UsernamePasswordAuthenticationFilter.class);
         http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()  // 放行所有请求
                 )
-                .addFilterBefore(new JwtFilter(jwtUtil),
-                        UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)             // 关闭 CSRF
+                .sessionManagement(AbstractHttpConfigurer::disable) // 关闭 Session 管理
+                .formLogin(AbstractHttpConfigurer::disable)        // 关闭表单登录
+                .httpBasic(AbstractHttpConfigurer::disable);       // 关闭 HTTP Basic 认证
         return http.build();
     }
 }

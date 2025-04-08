@@ -151,9 +151,9 @@ public class InfluxService {
                 "  |> aggregateWindow(every: 1s, fn: last, createEmpty: false)\n" +
                 "  |> yield(name: \"last\")";
 
-        List<FluxTable> query1 = queryApi.query(query);
+        List<FluxTable> queryResult = queryApi.query(query);
 
-        List<DataPoint> points = query1.stream()
+        List<DataPoint> points = queryResult.stream()
                 .flatMap(table -> table.getRecords().stream())
                 .collect(Collectors.groupingBy(record -> record.getTime()))
                 .values().stream()

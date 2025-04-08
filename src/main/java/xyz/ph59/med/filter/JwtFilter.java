@@ -1,8 +1,12 @@
 package xyz.ph59.med.filter;
 
 import com.alibaba.fastjson2.JSON;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import xyz.ph59.med.entity.OperationLog;
 import xyz.ph59.med.entity.Result;
+import xyz.ph59.med.service.LogService;
+import xyz.ph59.med.util.IpUtil;
 import xyz.ph59.med.util.JwtUtil;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
@@ -17,12 +21,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-
-    public JwtFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+    private final LogService logService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -37,13 +39,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
-            sendErrorResponse(response);
+            processUnauthorizedRequest(request ,response);
             return;
         }
 
         DecodedJWT jwt = jwtUtil.verifyToken(header.substring(7));
         if (jwt == null) {
-            sendErrorResponse(response);
+            processUnauthorizedRequest(request ,response);
             return;
         }
 
@@ -56,6 +58,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 )
         );
         filterChain.doFilter(request, response);
+    }
+
+    private void processUnauthorizedRequest(HttpServletRequest request, HttpServletResponse response) {
+        writeLog(request);
+        sendErrorResponse(response);
     }
 
     private void sendErrorResponse(HttpServletResponse response) {
@@ -74,5 +81,22 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         SecurityContextHolder.clearContext();
+    }
+
+    private void writeLog(HttpServletRequest request) {
+        OperationLog log = new OperationLog();
+
+        log.setIp(IpUtil.getClientIp(request));
+        log.setUa(request.getHeader("User-Agent"));
+        log.setRequestMethod(request.getMethod());
+        log.setPath(request.getServletPath());
+
+        log.setEventType("AUTH");
+        log.setAction("AUTH_CHECK");
+
+        log.setStatus(HttpStatus.UNAUTHORIZED.value());
+        log.setResult("INVALID_TOKEN");
+
+        logService.saveOperationLog(log);
     }
 }
