@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.ph59.med.mapper.EvalTaskMapper">
+    <!-- 插入操作 -->
+    <insert id="insertTask" parameterType="xyz.ph59.med.entity.EvalTaskInfo">
+        INSERT INTO eval_task (
+            task_id,
+            create_time,
+            status,
+            target_id,
+            target_time_start,
+            target_time_end,
+            caller_id
+        ) VALUES (
+                     #{taskId},
+                     #{createTime},
+                     'PENDING',
+                     #{targetId},
+                     #{targetTimeStart},
+                     #{targetTimeEnd},
+                     #{callerId}
+                 )
+    </insert>
+
+    <!-- 更新操作 -->
+    <update id="updateTaskResult" parameterType="xyz.ph59.med.entity.EvalTaskInfo">
+        UPDATE eval_task
+        SET end_time = #{endTime},
+            status = #{status},
+            eval_cost_time = #{evalCostTime},
+            result = #{result}
+        WHERE task_id = #{taskId}
+    </update>
+
+    <!-- 动态查询 -->
+    <select id="selectTasks" parameterType="map" resultType="xyz.ph59.med.entity.EvalTaskInfo">
+        SELECT * FROM eval_task
+        <where>
+            <if test="taskId != null">AND task_id = #{taskId}</if>
+            <if test="callerId != null">AND caller_id = #{callerId}</if>
+            <if test="targetId != null">AND target_id = #{targetId}</if>
+            <if test="status != null">AND status = #{status}</if>
+            <if test="createTimeStart != null and createTimeEnd != null">
+                AND create_time BETWEEN #{createTimeStart} AND #{createTimeEnd}
+            </if>
+            <if test="endTimeStart != null and endTimeEnd != null">
+                AND end_time BETWEEN #{endTimeStart} AND #{endTimeEnd}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+</mapper>

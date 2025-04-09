@@ -53,6 +53,7 @@ public class EvalController {
                     );
         }
         catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Result.builder(HttpStatus.INTERNAL_SERVER_ERROR)
                             .message("评估调用超时")
