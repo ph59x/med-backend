@@ -65,7 +65,7 @@ public class EvalService {
         else {
             taskInfo.setStatus("FAIL");
         }
-        taskInfo.setEvalCostTime(evalResult.getTimeCost());
+        taskInfo.setEvalCostTime(evalResult.getEvalCost());
         taskInfo.setEndTime(LocalDateTime.now());
 
         evalTaskMapper.updateTaskResult(taskInfo);

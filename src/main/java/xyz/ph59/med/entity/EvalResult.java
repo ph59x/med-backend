@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class EvalResult {
     private boolean success;
-    private Integer timeCost;
+    private Integer evalCost;
     private String type;
 }
