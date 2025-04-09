@@ -16,6 +16,10 @@ public class RabbitConfig {
     public static final String EXCHANGE_NAME = "EvalExchangeDirect";
     public static final String ROUTING_KEY = "evalTaskDirectRoute";
 
+    public static final String RESULT_TOPIC = "EvalTaskResult";
+    public static final String RESULT_EXCHANGE_NAME = "EvalExchangeDirect";
+    public static final String RESULT_ROUTING_KEY = "evalTaskDirectRoute";
+
     @Bean
     public Queue EvalTaskQueue() {
         return new Queue(TOPIC, true);
@@ -31,6 +35,22 @@ public class RabbitConfig {
         return BindingBuilder.bind(this.EvalTaskQueue())
                 .to(this.EvalExchange())
                 .with(ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue EvalTaskResultQueue() {
+        return new Queue(RESULT_TOPIC, true);
+    }
+
+    @Bean
+    public DirectExchange EvalResultExchange() {
+        return new DirectExchange(RESULT_EXCHANGE_NAME, true, false);
+    }
+
+    public Binding EvalResultQueueBind() {
+        return BindingBuilder.bind(this.EvalTaskResultQueue())
+                .to(this.EvalResultExchange())
+                .with(RESULT_ROUTING_KEY);
     }
 
     @Bean

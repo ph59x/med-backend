@@ -1,10 +1,11 @@
 package xyz.ph59.med.service;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
+import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import xyz.ph59.med.config.RabbitConfig;
@@ -27,17 +28,17 @@ public class EvalService {
     private final EvalTaskMapper evalTaskMapper;
 
     // TODO 故障处理
-    public EvalResult createTask(int uid, ZonedDateTime start, ZonedDateTime end) {
+    public String createTask(int uid, ZonedDateTime start, ZonedDateTime end) {
         //查询数据
         List<Short[]> messageData = influxService.queryForEval(uid, start, end);
 
         //构建消息
         UUID messageId = UUID.randomUUID();
         Message message = MessageBuilder.withBody(JSON.toJSONBytes(messageData))
-                .setCorrelationId(String.valueOf(messageId))
+                .setMessageId(String.valueOf(messageId))
                 .setContentEncoding("UTF-8")
                 .setTimestamp(Date.from(Instant.now()))
-                .setReplyTo("amq.rabbitmq.reply-to")
+                .setReplyTo(RabbitConfig.RESULT_TOPIC)
                 .build();
 
         EvalTaskInfo taskInfo = new EvalTaskInfo();
@@ -51,25 +52,39 @@ public class EvalService {
 
         evalTaskMapper.insertTask(taskInfo);
 
-        JSONObject json = (JSONObject) rabbitTemplate.convertSendAndReceive(
+        rabbitTemplate.convertAndSend(
                 RabbitConfig.EXCHANGE_NAME,
                 RabbitConfig.ROUTING_KEY,
                 message
         );
-        EvalResult evalResult = json.to(EvalResult.class);
 
-        if (evalResult.isSuccess()) {
-            taskInfo.setStatus("SUCCESS");
+        return messageId.toString();
+    }
+
+    @RabbitListener(queues = RabbitConfig.RESULT_TOPIC)
+    public void handleEvalResult(Channel channel, Message message) {
+        EvalResult evalResult = JSON.parseObject(message.getBody(), EvalResult.class);
+
+        EvalTaskInfo taskInfo = new EvalTaskInfo();
+        taskInfo.setTaskId(message.getMessageProperties().getMessageId());
+        taskInfo.setStatus(evalResult.getStatus());
+        if (evalResult.getStatus().equals("SUCCESS")) {
             taskInfo.setResult(evalResult.getType());
+            taskInfo.setEvalCostTime(evalResult.getEvalCost());
         }
-        else {
-            taskInfo.setStatus("FAIL");
-        }
-        taskInfo.setEvalCostTime(evalResult.getEvalCost());
         taskInfo.setEndTime(LocalDateTime.now());
 
-        evalTaskMapper.updateTaskResult(taskInfo);
+        try {
+            evalTaskMapper.updateTaskResult(taskInfo);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO 重试策略
+        }
 
-        return evalResult;
+    }
+
+    public EvalResult queryEvalTaskStatus(String taskId) {
+        return evalTaskMapper.selectResultByTaskId(taskId);
     }
 }

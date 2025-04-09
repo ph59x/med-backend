@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.ph59.med.mapper.EvalTaskMapper">
-    <!-- 插入操作 -->
     <insert id="insertTask" parameterType="xyz.ph59.med.entity.EvalTaskInfo">
         INSERT INTO eval_task (
             task_id,
@@ -23,7 +22,6 @@
                  )
     </insert>
 
-    <!-- 更新操作 -->
     <update id="updateTaskResult" parameterType="xyz.ph59.med.entity.EvalTaskInfo">
         UPDATE eval_task
         SET end_time = #{endTime},
@@ -33,7 +31,6 @@
         WHERE task_id = #{taskId}
     </update>
 
-    <!-- 动态查询 -->
     <select id="selectTasks" parameterType="map" resultType="xyz.ph59.med.entity.EvalTaskInfo">
         SELECT * FROM eval_task
         <where>
@@ -49,5 +46,14 @@
             </if>
         </where>
         ORDER BY create_time DESC
+    </select>
+
+    <select id="selectResultByTaskId" resultType="xyz.ph59.med.entity.EvalResult">
+        SELECT
+        status,
+        NULL AS evalCost,
+        result AS type
+        FROM eval_task
+        WHERE task_id = #{taskId}
     </select>
 </mapper>

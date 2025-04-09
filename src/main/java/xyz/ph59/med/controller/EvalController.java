@@ -4,15 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xyz.ph59.med.entity.Result;
 import xyz.ph59.med.service.EvalService;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/eval")
@@ -46,8 +44,9 @@ public class EvalController {
             Object result = evalService.createTask(uid, start, end);
 
 
-            return ResponseEntity.ok(Result.builder(HttpStatus.OK)
-                            .message("评估完成")
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Result.builder(HttpStatus.OK)
+                            .message("任务已创建")
                             .data(result)
                             .build()
                     );
@@ -56,9 +55,35 @@ public class EvalController {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Result.builder(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .message("评估调用超时")
+                            .message("任务创建失败")
                             .build()
                     );
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<Result> queryTask(@RequestParam("task_id") String taskId) {
+        /**
+         * TODO 权限检查
+         * 用户只能查看自己创建的任务
+         * 医生继承用户，只能查看与自己有关联的用户创建的任务
+         */
+        try {
+            UUID.fromString(taskId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Result.builder(HttpStatus.BAD_REQUEST)
+                            .message("无效的任务id")
+                            .build()
+                    );
+        }
+
+        return ResponseEntity.ok(
+                Result.builder(HttpStatus.OK)
+                        .message(HttpStatus.OK.getReasonPhrase())
+                        .data(evalService.queryEvalTaskStatus(taskId))
+                        .build()
+        );
+
     }
 }
