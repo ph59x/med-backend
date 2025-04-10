@@ -9,8 +9,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import xyz.ph59.med.config.RabbitConfig;
-import xyz.ph59.med.entity.EvalResult;
-import xyz.ph59.med.entity.EvalTaskInfo;
+import xyz.ph59.med.entity.eval.EvalResult;
+import xyz.ph59.med.entity.eval.EvalTaskInfo;
 import xyz.ph59.med.mapper.EvalTaskMapper;
 
 import java.time.Instant;

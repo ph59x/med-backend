@@ -1,4 +1,4 @@
-package xyz.ph59.med.entity.request;
+package xyz.ph59.med.dto.request;
 
 import lombok.Data;
 

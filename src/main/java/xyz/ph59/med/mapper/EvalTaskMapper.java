@@ -3,8 +3,8 @@ package xyz.ph59.med.mapper;
 import jakarta.annotation.Nullable;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import xyz.ph59.med.entity.EvalResult;
-import xyz.ph59.med.entity.EvalTaskInfo;
+import xyz.ph59.med.entity.eval.EvalResult;
+import xyz.ph59.med.entity.eval.EvalTaskInfo;
 
 import java.time.LocalDateTime;
 import java.util.List;

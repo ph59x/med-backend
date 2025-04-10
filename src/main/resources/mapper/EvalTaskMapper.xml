@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.ph59.med.mapper.EvalTaskMapper">
-    <insert id="insertTask" parameterType="xyz.ph59.med.entity.EvalTaskInfo">
+    <insert id="insertTask" parameterType="xyz.ph59.med.entity.eval.EvalTaskInfo">
         INSERT INTO eval_task (
             task_id,
             create_time,
@@ -22,7 +22,7 @@
                  )
     </insert>
 
-    <update id="updateTaskResult" parameterType="xyz.ph59.med.entity.EvalTaskInfo">
+    <update id="updateTaskResult" parameterType="xyz.ph59.med.entity.eval.EvalTaskInfo">
         UPDATE eval_task
         SET end_time = #{endTime},
             status = #{status},
@@ -31,7 +31,7 @@
         WHERE task_id = #{taskId}
     </update>
 
-    <select id="selectTasks" parameterType="map" resultType="xyz.ph59.med.entity.EvalTaskInfo">
+    <select id="selectTasks" parameterType="map" resultType="xyz.ph59.med.entity.eval.EvalTaskInfo">
         SELECT * FROM eval_task
         <where>
             <if test="taskId != null">AND task_id = #{taskId}</if>
@@ -48,7 +48,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="selectResultByTaskId" resultType="xyz.ph59.med.entity.EvalResult">
+    <select id="selectResultByTaskId" resultType="xyz.ph59.med.entity.eval.EvalResult">
         SELECT
         status,
         NULL AS evalCost,

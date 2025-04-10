@@ -12,7 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import xyz.ph59.med.entity.OperationLog;
 import xyz.ph59.med.entity.Result;
-import xyz.ph59.med.entity.request.LoginRequest;
+import xyz.ph59.med.dto.request.LoginRequest;
 import xyz.ph59.med.service.LogService;
 import xyz.ph59.med.util.IpUtil;
 

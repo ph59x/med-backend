@@ -1,4 +1,4 @@
-package xyz.ph59.med.entity;
+package xyz.ph59.med.entity.eval;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

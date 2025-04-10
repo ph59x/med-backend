@@ -1,10 +1,10 @@
 package xyz.ph59.med.controller;
 
 import lombok.RequiredArgsConstructor;
-import xyz.ph59.med.entity.LoginResponseInfo;
-import xyz.ph59.med.entity.request.LoginRequest;
-import xyz.ph59.med.entity.request.RegisterRequest;
-import xyz.ph59.med.entity.response.RegisterResponse;
+import xyz.ph59.med.dto.LoginResponseInfo;
+import xyz.ph59.med.dto.request.LoginRequest;
+import xyz.ph59.med.dto.request.RegisterRequest;
+import xyz.ph59.med.dto.response.RegisterResponse;
 import xyz.ph59.med.entity.Result;
 import xyz.ph59.med.exception.InvalidTokenException;
 import xyz.ph59.med.exception.UnauthorizedException;
