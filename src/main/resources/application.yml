@@ -22,3 +22,9 @@ influxdb:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+
+sa-token:
+  token-name: Authorization
+  jwt-secret-key: kajsguioahgkldajdglja
+  is-read-cookie: false
+  timeout: 1800

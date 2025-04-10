@@ -66,7 +66,7 @@ public class AuthController {
                     );
         }
 
-        Cookie cookie = new Cookie("token", info.getToken());
+        Cookie cookie = new Cookie("token", info.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/auth/session");
@@ -75,7 +75,7 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE,
                 String.format("%s=%s; Path=%s; HttpOnly; Secure; SameSite=Strict",
                         cookie.getName(), cookie.getValue(), cookie.getPath()));
-        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + info.getJwt());
+        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + info.getAccessToken());
 
         return ResponseEntity.ok().body(Result.builder(HttpStatus.OK).build());
     }

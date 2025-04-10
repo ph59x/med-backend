@@ -1,9 +1,9 @@
 package xyz.ph59.med.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import xyz.ph59.med.entity.Result;
 import xyz.ph59.med.service.EvalService;
@@ -36,7 +36,7 @@ public class EvalController {
         }
 
         if (uid == null) {
-            uid = (int) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            uid = StpUtil.getLoginIdAsInt();
         }
         // TODO 指定UID与请求发起者不同时的权限检查
 

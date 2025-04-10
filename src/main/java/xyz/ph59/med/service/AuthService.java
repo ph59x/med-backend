@@ -1,8 +1,10 @@
 package xyz.ph59.med.service;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.alibaba.fastjson2.JSON;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import xyz.ph59.med.entity.LoginResponseInfo;
 import xyz.ph59.med.entity.RefreshTokenInfo;
@@ -12,24 +14,15 @@ import xyz.ph59.med.exception.InvalidTokenException;
 import xyz.ph59.med.exception.UnauthorizedException;
 import xyz.ph59.med.exception.VerificationFailException;
 import xyz.ph59.med.mapper.UserMapper;
-import xyz.ph59.med.util.JwtUtil;
 
 import java.time.Duration;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
     private final UserMapper userMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final StringRedisTemplate redisTemplate;
-    private final JwtUtil jwtUtil;
-
-    public AuthService(UserMapper userMapper, StringRedisTemplate redisTemplate, JwtUtil jwtUtil) {
-        this.userMapper = userMapper;
-        this.passwordEncoder = new BCryptPasswordEncoder(12);
-        this.redisTemplate = redisTemplate;
-        this.jwtUtil = jwtUtil;
-    }
 
     public RegisterResponse register(String username, String password) {
         User existingUser = userMapper.selectByUsername(username);
@@ -39,7 +32,7 @@ public class AuthService {
 
         User user = new User();
         user.setUsername(username);
-        user.setHash(passwordEncoder.encode(password));
+        user.setHash(BCrypt.hashpw(password, BCrypt.gensalt(12)));
         user.setRole("USER");
         userMapper.insertUser(user);
 
@@ -48,9 +41,10 @@ public class AuthService {
 
     public LoginResponseInfo login(String username, String password, String ip, String ua) throws UnauthorizedException {
         User user = userMapper.selectByUsername(username);
-        if (user == null || !passwordEncoder.matches(password,  user.getHash()))  {
+        if (user == null || !BCrypt.checkpw(password, user.getHash())) {
             throw new UnauthorizedException("Failed to match username with password.");
         }
+
         String refreshToken = UUID.randomUUID().toString();
         RefreshTokenInfo tokenInfo = new RefreshTokenInfo(
                 user.getId(),
@@ -58,16 +52,16 @@ public class AuthService {
                 ip,
                 ua
         );
-
         redisTemplate.opsForValue().set(
                 "refresh_token:" + refreshToken,
                 JSON.toJSONString(tokenInfo),
                 Duration.ofDays(7)
         );
 
-        String jwt = jwtUtil.generateToken(user.getId(), user.getRole());
+        StpUtil.login(user.getId());
+        String accessToken = StpUtil.getTokenValue();
 
-        return new LoginResponseInfo(jwt, refreshToken);
+        return new LoginResponseInfo(accessToken, refreshToken);
     }
 
     public String refreshSession(String refreshToken, String ip, String ua) throws InvalidTokenException, VerificationFailException {
@@ -82,6 +76,7 @@ public class AuthService {
             throw new VerificationFailException();
         }
 
-        return jwtUtil.generateToken(tokenInfo.getUid(), tokenInfo.getRole());
+        StpUtil.login(tokenInfo.getUid());
+        return StpUtil.getTokenValue();
     }
 }

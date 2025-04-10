@@ -1,14 +1,12 @@
 package xyz.ph59.med.aspect;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import cn.dev33.satoken.stp.StpUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -17,18 +15,12 @@ import xyz.ph59.med.entity.Result;
 import xyz.ph59.med.entity.request.LoginRequest;
 import xyz.ph59.med.service.LogService;
 import xyz.ph59.med.util.IpUtil;
-import xyz.ph59.med.util.JwtUtil;
 
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class AuditAspect {
-    private LogService logService;
-    private JwtUtil jwtUtil;
-
-    public AuditAspect(LogService logService, JwtUtil jwtUtil) {
-        this.logService = logService;
-        this.jwtUtil = jwtUtil;
-    }
+    private final LogService logService;
 
     @Around("execution(public * xyz.ph59.med.controller.AuthController.login(..))")
     public Object loginAudit(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -93,8 +85,7 @@ public class AuditAspect {
                 log.setStatus(200);
                 log.setResult("SUCCESS");
 
-                DecodedJWT jwt = jwtUtil.verifyToken(result.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0).substring(7));
-                log.setUserId(Long.valueOf(jwt.getSubject()));
+                log.setUserId(Long.valueOf(StpUtil.getLoginIdAsLong()));
 
                 break;
             case 401:
@@ -134,7 +125,7 @@ public class AuditAspect {
         log.setEventType("DATA");
         log.setAction("WRITE_DATA");
 
-        log.setUserId((Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        log.setUserId(StpUtil.getLoginIdAsLong());
 
         ResponseEntity<?> result = (ResponseEntity<?>) joinPoint.proceed();
 

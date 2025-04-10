@@ -1,9 +1,9 @@
 package xyz.ph59.med.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import xyz.ph59.med.entity.DataPoint;
 import xyz.ph59.med.entity.Result;
@@ -35,7 +35,7 @@ public class DataController {
                 );
             }
 
-            int uid = (int) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            int uid = StpUtil.getLoginIdAsInt();
 
             influxService.write(points, uid);
 
@@ -66,7 +66,7 @@ public class DataController {
             );
         }
 
-        int uid = (int) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int uid = StpUtil.getLoginIdAsInt();
 
         List<DataPoint> query = influxService.query(uid, start, end);
 
