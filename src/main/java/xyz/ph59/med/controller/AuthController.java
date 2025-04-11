@@ -1,5 +1,6 @@
 package xyz.ph59.med.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import xyz.ph59.med.dto.LoginResponseInfo;
 import xyz.ph59.med.dto.request.LoginRequest;
@@ -10,6 +11,7 @@ import xyz.ph59.med.exception.InvalidTokenException;
 import xyz.ph59.med.exception.UnauthorizedException;
 import xyz.ph59.med.exception.VerificationFailException;
 import xyz.ph59.med.service.AuthService;
+import xyz.ph59.med.service.PermissionService;
 import xyz.ph59.med.util.IpUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -66,12 +68,12 @@ public class AuthController {
                     );
         }
 
+        // TODO 将Refresh Token写入Header而不是Cookie
         Cookie cookie = new Cookie("token", info.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/auth/session");
         cookie.setMaxAge(604800); // 7天
-        // TODO 写入cookie有效期
         response.addHeader(HttpHeaders.SET_COOKIE,
                 String.format("%s=%s; Path=%s; HttpOnly; Secure; SameSite=Strict",
                         cookie.getName(), cookie.getValue(), cookie.getPath()));

@@ -1,5 +1,8 @@
 package xyz.ph59.med.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,8 @@ public class DataController {
         this.influxService = influxService;
     }
 
+    @SaCheckRole("USER")
+    @SaCheckPermission("DATA_ACCESS")
     @PostMapping
     public ResponseEntity<?> writeData(@RequestBody String request) {
         try {
@@ -51,6 +56,8 @@ public class DataController {
     }
 
     // 难点 时区处理
+    @SaCheckPermission("DATA_ACCESS")
+    @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
     @GetMapping
     public ResponseEntity<?> queryData(@RequestParam("start") String startTimeStr,
                                        @RequestParam("end") String endTimeStr) {

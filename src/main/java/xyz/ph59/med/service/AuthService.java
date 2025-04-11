@@ -16,6 +16,7 @@ import xyz.ph59.med.exception.VerificationFailException;
 import xyz.ph59.med.mapper.UserMapper;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class AuthService {
     private final UserMapper userMapper;
     private final StringRedisTemplate redisTemplate;
+    private final PermissionService permissionService;
 
     public RegisterResponse register(String username, String password) {
         User existingUser = userMapper.selectByUsername(username);
@@ -33,7 +35,7 @@ public class AuthService {
         User user = new User();
         user.setUsername(username);
         user.setHash(BCrypt.hashpw(password, BCrypt.gensalt(12)));
-        user.setRole("USER");
+        user.setCreateDate(LocalDateTime.now());
         userMapper.insertUser(user);
 
         return new RegisterResponse(user.getId(),  user.getUsername());
@@ -48,7 +50,6 @@ public class AuthService {
         String refreshToken = UUID.randomUUID().toString();
         RefreshTokenInfo tokenInfo = new RefreshTokenInfo(
                 user.getId(),
-                user.getRole(),
                 ip,
                 ua
         );
@@ -57,6 +58,9 @@ public class AuthService {
                 JSON.toJSONString(tokenInfo),
                 Duration.ofDays(7)
         );
+
+        // TODO 异步缓存用户权限
+        permissionService.getUserPermission(user.getId());
 
         StpUtil.login(user.getId());
         String accessToken = StpUtil.getTokenValue();
@@ -77,6 +81,9 @@ public class AuthService {
         }
 
         StpUtil.login(tokenInfo.getUid());
+        // TODO 异步刷新用户权限
+        permissionService.refreshUserPermission(tokenInfo.getUid());
+
         return StpUtil.getTokenValue();
     }
 }

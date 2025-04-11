@@ -1,5 +1,8 @@
 package xyz.ph59.med.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,8 @@ import java.util.UUID;
 public class EvalController {
     private final EvalService evalService;
 
+    @SaCheckPermission("TASK_CREATE")
+    @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
     @PostMapping
     public ResponseEntity<Result> createEvalTask(@RequestParam("start") String startTimeStr,
                                                  @RequestParam("end") String endTimeStr,
@@ -61,6 +66,8 @@ public class EvalController {
         }
     }
 
+    @SaCheckPermission("TASK_VIEW")
+    @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
     @GetMapping
     public ResponseEntity<Result> queryTask(@RequestParam("task_id") String taskId) {
         /**

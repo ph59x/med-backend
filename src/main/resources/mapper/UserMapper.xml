@@ -3,12 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.ph59.med.mapper.UserMapper">
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO user (username, hash, role)
-        VALUES (#{username}, #{hash}, #{role})
+        INSERT INTO user (username, hash)
+        VALUES (#{username}, #{hash})
     </insert>
 
     <select id="selectByUsername" resultType="xyz.ph59.med.entity.User">
-        SELECT id, username, hash, role
+        SELECT *
         FROM user
         WHERE username = #{username}
     </select>
