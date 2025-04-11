@@ -25,6 +25,7 @@ mybatis:
 
 sa-token:
   token-name: Authorization
+  token-prefix: Bearer
   jwt-secret-key: kajsguioahgkldajdglja
   is-read-cookie: false
   timeout: 1800
