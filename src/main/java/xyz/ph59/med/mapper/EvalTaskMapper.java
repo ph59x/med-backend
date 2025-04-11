@@ -25,4 +25,6 @@ public interface EvalTaskMapper {
                                    @Param("endTimeEnd") @Nullable LocalDateTime endTimeEnd);
 
     EvalResult selectResultByTaskId(String taskId);
+
+    Integer selectTargetIdByTaskId(String taskId);
 }

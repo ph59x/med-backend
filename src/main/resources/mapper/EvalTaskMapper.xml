@@ -56,4 +56,10 @@
         FROM eval_task
         WHERE task_id = #{taskId}
     </select>
+
+    <select id="selectTargetIdByTaskId" resultType="Integer">
+        SELECT target_id
+        FROM eval_task
+        WHERE task_id = #{taskId}
+    </select>
 </mapper>

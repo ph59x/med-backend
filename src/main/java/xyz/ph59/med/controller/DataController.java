@@ -8,6 +8,7 @@ import com.alibaba.fastjson2.JSON;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import xyz.ph59.med.annotation.CheckScope;
 import xyz.ph59.med.entity.DataPoint;
 import xyz.ph59.med.entity.Result;
 import xyz.ph59.med.service.InfluxService;
@@ -58,9 +59,13 @@ public class DataController {
     // 难点 时区处理
     @SaCheckPermission("DATA_ACCESS")
     @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
+    @CheckScope("DATA_ACCESS")
     @GetMapping
-    public ResponseEntity<?> queryData(@RequestParam("start") String startTimeStr,
-                                       @RequestParam("end") String endTimeStr) {
+    public ResponseEntity<?> queryData(
+            @RequestParam(value = "uid", required = false) Integer uid,
+            @RequestParam("start") String startTimeStr,
+            @RequestParam("end") String endTimeStr
+    ) {
         ZonedDateTime start, end;
         try {
             start = ZonedDateTime.parse(startTimeStr);
@@ -73,7 +78,9 @@ public class DataController {
             );
         }
 
-        int uid = StpUtil.getLoginIdAsInt();
+        if (uid == null) {
+            uid = StpUtil.getLoginIdAsInt();
+        }
 
         List<DataPoint> query = influxService.query(uid, start, end);
 

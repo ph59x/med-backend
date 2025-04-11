@@ -87,4 +87,12 @@ public class EvalService {
     public EvalResult queryEvalTaskStatus(String taskId) {
         return evalTaskMapper.selectResultByTaskId(taskId);
     }
+
+    public Integer queryTargetId(String taskId) throws IllegalArgumentException{
+        Integer targetId = evalTaskMapper.selectTargetIdByTaskId(taskId);
+        if (targetId == null) {
+            throw new IllegalArgumentException("任务不存在或数据库中对应的id为空");
+        }
+        return targetId;
+    }
 }

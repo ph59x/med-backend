@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import xyz.ph59.med.annotation.CheckScope;
 import xyz.ph59.med.entity.Result;
 import xyz.ph59.med.service.EvalService;
 
@@ -23,10 +24,13 @@ public class EvalController {
 
     @SaCheckPermission("TASK_CREATE")
     @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
+    @CheckScope("TASK_CREATE")
     @PostMapping
-    public ResponseEntity<Result> createEvalTask(@RequestParam("start") String startTimeStr,
-                                                 @RequestParam("end") String endTimeStr,
-                                                 @RequestParam("uid") Integer uid) {
+    public ResponseEntity<Result> createEvalTask(
+            @RequestParam(value = "uid", required = false) Integer uid,
+            @RequestParam("start") String startTimeStr,
+            @RequestParam("end") String endTimeStr
+    ) {
 
         ZonedDateTime start, end;
         try {
@@ -68,6 +72,7 @@ public class EvalController {
 
     @SaCheckPermission("TASK_VIEW")
     @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
+    @CheckScope("TASK_VIEW")
     @GetMapping
     public ResponseEntity<Result> queryTask(@RequestParam("task_id") String taskId) {
         /**
@@ -75,15 +80,6 @@ public class EvalController {
          * 用户只能查看自己创建的任务
          * 医生继承用户，只能查看与自己有关联的用户创建的任务
          */
-        try {
-            UUID.fromString(taskId);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Result.builder(HttpStatus.BAD_REQUEST)
-                            .message("无效的任务id")
-                            .build()
-                    );
-        }
 
         return ResponseEntity.ok(
                 Result.builder(HttpStatus.OK)
