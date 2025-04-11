@@ -35,7 +35,7 @@ public class AuthService {
         User user = new User();
         user.setUsername(username);
         user.setHash(BCrypt.hashpw(password, BCrypt.gensalt(12)));
-        user.setCreateDate(LocalDateTime.now());
+        user.setCreateTime(LocalDateTime.now());
         userMapper.insertUser(user);
 
         return new RegisterResponse(user.getId(),  user.getUsername());

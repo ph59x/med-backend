@@ -9,7 +9,7 @@ public class User {
     private int id;
     private String username;
     private String hash;
-    private LocalDateTime createDate;
+    private LocalDateTime createTime;
     private Integer disabled;
     private Integer deptId;
 }
