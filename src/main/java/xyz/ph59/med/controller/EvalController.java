@@ -47,7 +47,6 @@ public class EvalController {
         if (uid == null) {
             uid = StpUtil.getLoginIdAsInt();
         }
-        // TODO 指定UID与请求发起者不同时的权限检查
 
         try {
             Object result = evalService.createTask(uid, start, end);
@@ -75,12 +74,6 @@ public class EvalController {
     @CheckScope("TASK_VIEW")
     @GetMapping
     public ResponseEntity<Result> queryTask(@RequestParam("task_id") String taskId) {
-        /**
-         * TODO 权限检查
-         * 用户只能查看自己创建的任务
-         * 医生继承用户，只能查看与自己有关联的用户创建的任务
-         */
-
         return ResponseEntity.ok(
                 Result.builder(HttpStatus.OK)
                         .message(HttpStatus.OK.getReasonPhrase())

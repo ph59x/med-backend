@@ -57,6 +57,7 @@ public class PermissionService {
 
         redisTemplate.delete("Perm:"  + uid);
     }
+
     @Transactional
     public void refreshUserPermission(int uid) {
         // TODO 根据TTL确定是否刷新
