@@ -25,7 +25,7 @@ import java.util.UUID;
 public class EvalService {
     private final RabbitTemplate rabbitTemplate;
     private final InfluxService influxService;
-    private final EvalTaskMapper evalTaskMapper;
+    private final DataService dataService;
 
     // TODO 故障处理
     public String createTask(int uid, ZonedDateTime start, ZonedDateTime end) {
@@ -50,7 +50,7 @@ public class EvalService {
         taskInfo.setCallerId(Long.valueOf(uid));
         taskInfo.setCreateTime(LocalDateTime.now());
 
-        evalTaskMapper.insertTask(taskInfo);
+        dataService.writeEvalTask(taskInfo);
 
         rabbitTemplate.convertAndSend(
                 RabbitConfig.EXCHANGE_NAME,
@@ -75,7 +75,7 @@ public class EvalService {
         taskInfo.setEndTime(LocalDateTime.now());
 
         try {
-            evalTaskMapper.updateTaskResult(taskInfo);
+            dataService.updateEvalTask(taskInfo);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,11 +85,12 @@ public class EvalService {
     }
 
     public EvalResult queryEvalTaskStatus(String taskId) {
-        return evalTaskMapper.selectResultByTaskId(taskId);
+        EvalTaskInfo taskInfo = dataService.queryEvalTask(taskId);
+        return new EvalResult(taskInfo.getStatus(), taskInfo.getEvalCostTime(), taskInfo.getResult());
     }
 
     public Integer queryTargetId(String taskId) throws IllegalArgumentException{
-        Integer targetId = evalTaskMapper.selectTargetIdByTaskId(taskId);
+        Integer targetId = dataService.queryEvalTaskTargetId(taskId);
         if (targetId == null) {
             throw new IllegalArgumentException("任务不存在或数据库中对应的id为空");
         }
