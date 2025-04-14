@@ -31,7 +31,20 @@
         WHERE task_id = #{taskId}
     </update>
 
-    <select id="selectTasks" parameterType="map" resultType="xyz.ph59.med.entity.eval.EvalTaskInfo">
+    <resultMap id="EvalTaskInfoMap" type="xyz.ph59.med.entity.eval.EvalTaskInfo">
+        <result column="task_id" property="taskId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="status" property="status"/>
+        <result column="eval_cost_time" property="evalCostTime"/>
+        <result column="target_id" property="targetId"/>
+        <result column="target_time_start" property="targetTimeStart"/>
+        <result column="target_time_end" property="targetTimeEnd"/>
+        <result column="result" property="result"/>
+        <result column="caller_id" property="callerId"/>
+    </resultMap>
+
+    <select id="selectTasks" parameterType="map" resultMap="EvalTaskInfoMap">
         SELECT * FROM eval_task
         <where>
             <if test="taskId != null">AND task_id = #{taskId}</if>
