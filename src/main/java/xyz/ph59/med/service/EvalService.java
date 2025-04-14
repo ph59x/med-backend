@@ -1,5 +1,6 @@
 package xyz.ph59.med.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +47,7 @@ public class EvalService {
         taskInfo.setTaskId(messageId.toString());
         taskInfo.setTargetTimeStart(start.toLocalDateTime());
         taskInfo.setTargetTimeEnd(end.toLocalDateTime());
-        // TODO 处理调用者与目标用户不同的情况
-        taskInfo.setCallerId(Long.valueOf(uid));
+        taskInfo.setCallerId(StpUtil.getLoginIdAsLong());
         taskInfo.setCreateTime(LocalDateTime.now());
 
         dataService.writeEvalTask(taskInfo);
