@@ -8,7 +8,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import xyz.ph59.med.util.FastJsonMessageConverter;
+import xyz.ph59.med.mq.MessageConverter;
 
 @Configuration
 public class RabbitConfig {
@@ -56,7 +56,7 @@ public class RabbitConfig {
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(new FastJsonMessageConverter());
+        template.setMessageConverter(new MessageConverter());
         template.setReplyTimeout(60000);
         return template;
     }
