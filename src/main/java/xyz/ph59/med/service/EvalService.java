@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import xyz.ph59.med.config.RabbitConfig;
 import xyz.ph59.med.entity.eval.EvalResult;
 import xyz.ph59.med.entity.eval.EvalTaskInfo;
-import xyz.ph59.med.mapper.EvalTaskMapper;
+import xyz.ph59.med.tsdb.TsdbConnector;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,13 +25,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EvalService {
     private final RabbitTemplate rabbitTemplate;
-    private final InfluxService influxService;
+    private final TsdbConnector tsdbConnector;
     private final DataService dataService;
 
     // TODO 故障处理
     public String createTask(int uid, ZonedDateTime start, ZonedDateTime end) {
         //查询数据
-        List<Short[]> messageData = influxService.queryForEval(uid, start, end);
+        List<Short[]> messageData = tsdbConnector.queryForEval(uid, start, end);
 
         //构建消息
         UUID messageId = UUID.randomUUID();
@@ -89,7 +89,7 @@ public class EvalService {
         return new EvalResult(taskInfo.getStatus(), taskInfo.getEvalCostTime(), taskInfo.getResult());
     }
 
-    public Integer queryTargetId(String taskId) throws IllegalArgumentException{
+    public Integer queryTargetId(String taskId) throws IllegalArgumentException {
         Integer targetId = dataService.queryEvalTaskTargetId(taskId);
         if (targetId == null) {
             throw new IllegalArgumentException("任务不存在或数据库中对应的id为空");

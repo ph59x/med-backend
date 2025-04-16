@@ -5,13 +5,14 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.ph59.med.annotation.CheckScope;
 import xyz.ph59.med.entity.DataPoint;
 import xyz.ph59.med.entity.Result;
-import xyz.ph59.med.service.InfluxService;
+import xyz.ph59.med.tsdb.TsdbConnector;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -19,12 +20,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/data")
+@RequiredArgsConstructor
 public class DataController {
-    private final InfluxService influxService;
-
-    public DataController(InfluxService influxService) {
-        this.influxService = influxService;
-    }
+    private final TsdbConnector tsdbConnector;
 
     @SaCheckRole("USER")
     @SaCheckPermission("DATA_ACCESS")
@@ -43,7 +41,7 @@ public class DataController {
 
             int uid = StpUtil.getLoginIdAsInt();
 
-            influxService.write(points, uid);
+            tsdbConnector.write(uid, points);
 
             return ResponseEntity.accepted().build();
         } catch (RuntimeException e) {
@@ -82,7 +80,7 @@ public class DataController {
             uid = StpUtil.getLoginIdAsInt();
         }
 
-        List<DataPoint> query = influxService.query(uid, start, end);
+        List<DataPoint> query = tsdbConnector.query(uid, start, end);
 
         return ResponseEntity.ok(
                 Result.builder(HttpStatus.OK)

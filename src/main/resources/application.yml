@@ -14,11 +14,13 @@ spring:
     host: 192.168.1.242
     port: 5672
 
-influxdb:
-  url: "http://192.168.1.242:8086"
-  org: 1ddc9721dae42ff4
-  bucket: demodata
-  token: "d8gfMN7Q85weOROvOIdaz3SVoaWtJFOzeA47r6jL5Ewo44fC5rVCED9MPG0i7L_px0nkSK-TZjd9hsjq1bTKTg=="
+tsdb:
+  type: influxdb
+  influxdb:
+    url: "http://192.168.1.242:8086"
+    org: 1ddc9721dae42ff4
+    bucket: demodata
+    token: "d8gfMN7Q85weOROvOIdaz3SVoaWtJFOzeA47r6jL5Ewo44fC5rVCED9MPG0i7L_px0nkSK-TZjd9hsjq1bTKTg=="
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
