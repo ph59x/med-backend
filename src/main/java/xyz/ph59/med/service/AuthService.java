@@ -65,7 +65,7 @@ public class AuthService {
         StpUtil.login(user.getId());
         String accessToken = StpUtil.getTokenValue();
 
-        return new LoginResponseInfo(accessToken, refreshToken);
+        return new LoginResponseInfo(accessToken, refreshToken, user.getId(), user.getUsername());
     }
 
     public String refreshSession(String refreshToken, String ip, String ua) throws InvalidTokenException, VerificationFailException {
