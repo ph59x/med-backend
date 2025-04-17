@@ -1,6 +1,5 @@
 package xyz.ph59.med.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import xyz.ph59.med.dto.LoginResponseInfo;
 import xyz.ph59.med.dto.request.LoginRequest;
@@ -11,15 +10,12 @@ import xyz.ph59.med.exception.InvalidTokenException;
 import xyz.ph59.med.exception.UnauthorizedException;
 import xyz.ph59.med.exception.VerificationFailException;
 import xyz.ph59.med.service.AuthService;
-import xyz.ph59.med.service.PermissionService;
 import xyz.ph59.med.util.IpUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,8 +44,7 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<Result> login(@RequestBody LoginRequest request,
-                                   HttpServletRequest httpRequest,
-                                   HttpServletResponse response) {
+                                   HttpServletRequest httpRequest) {
         // TODO 布隆过滤器筛选有效用户
 
         LoginResponseInfo info;
@@ -68,18 +63,12 @@ public class AuthController {
                     );
         }
 
-        // TODO 将Refresh Token写入Header而不是Cookie
-        Cookie cookie = new Cookie("token", info.getRefreshToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/auth/session");
-        cookie.setMaxAge(604800); // 7天
-        response.addHeader(HttpHeaders.SET_COOKIE,
-                String.format("%s=%s; Path=%s; HttpOnly; Secure; SameSite=Strict",
-                        cookie.getName(), cookie.getValue(), cookie.getPath()));
-        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + info.getAccessToken());
-
-        return ResponseEntity.ok().body(Result.builder(HttpStatus.OK).build());
+        return ResponseEntity.ok()
+                .header("X-Refresh-Token", info.getRefreshToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + info.getAccessToken())
+                .body(Result.builder(HttpStatus.OK)
+                        .data(info)
+                        .build());
     }
 
     @PostMapping("/auth/session")
@@ -90,9 +79,9 @@ public class AuthController {
 
         try {
             String newJwt = authService.refreshSession(refreshToken, ip, ua);
-            return ResponseEntity.ok()
+            return ResponseEntity.noContent()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + newJwt)
-                    .body(Result.builder(HttpStatus.OK).build());
+                    .build();
         } catch (InvalidTokenException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Result.builder(HttpStatus.UNAUTHORIZED)
