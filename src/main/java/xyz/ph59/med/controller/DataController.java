@@ -31,10 +31,10 @@ public class DataController {
         try {
             List<DataPoint> points = JSON.parseArray(request).toJavaList(DataPoint.class);
 
-            if (points == null) {
+            if (points == null || points.isEmpty()) {
                 return ResponseEntity.badRequest().body(
                         Result.builder(HttpStatus.BAD_REQUEST)
-                                .message("Invalid JSON Array format.")
+                                .message("Invalid input format.")
                                 .build()
                 );
             }
