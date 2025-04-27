@@ -53,7 +53,7 @@ public class EvalController {
 
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(Result.builder(HttpStatus.OK)
+                    .body(Result.builder(HttpStatus.CREATED)
                             .message("任务已创建")
                             .data(result)
                             .build()
