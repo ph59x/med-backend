@@ -1,10 +1,37 @@
 package xyz.ph59.med.tsdb.query.builder;
 
-import xyz.ph59.med.tsdb.query.AbstractQueryBuilder;
+import xyz.ph59.med.tsdb.query.TsdbQueryBuilder;
 
-public class InfluxQueryBuilder extends AbstractQueryBuilder {
+import java.time.ZonedDateTime;
+
+public class InfluxQueryBuilder extends TsdbQueryBuilder {
     private String bucket;
     private String measurement;
+
+    @Override
+    public InfluxQueryBuilder uid(int uid) {
+        return (InfluxQueryBuilder) super.uid(uid);
+    }
+
+    @Override
+    public InfluxQueryBuilder startTime(ZonedDateTime start) {
+        return (InfluxQueryBuilder) super.startTime(start);
+    }
+
+    @Override
+    public InfluxQueryBuilder endTime(ZonedDateTime end) {
+        return (InfluxQueryBuilder) super.endTime(end);
+    }
+
+    @Override
+    public InfluxQueryBuilder forEval() {
+        return (InfluxQueryBuilder) super.forEval();
+    }
+
+    @Override
+    public InfluxQueryBuilder forSimpleQuery() {
+        return (InfluxQueryBuilder) super.forSimpleQuery();
+    }
 
     @Override
     public String build() {
