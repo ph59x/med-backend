@@ -4,7 +4,7 @@
 <mapper namespace="xyz.ph59.med.mapper.RelationMapper">
     <select id="selectRelatedUser">
         SELECT user_id
-        FROM doctor_user
+        FROM med.doctor_user
         WHERE doctor_id = #{drId}
     </select>
 </mapper>

@@ -19,21 +19,21 @@
             r.name  AS role_name,
             rp.permission  AS perm_code,
             rp.scope  AS perm_scope
-        FROM user_role ur
-                 JOIN role r ON ur.role_code  = r.code
-                 LEFT JOIN role_permission rp ON r.code  = rp.role
+        FROM med.user_role ur
+                 JOIN med.role r ON ur.role_code  = r.code
+                 LEFT JOIN med.role_permission rp ON r.code  = rp.role
         WHERE ur.user_id  = #{userId}
     </select>
 
     <insert id="insertUserRoles">
-        INSERT INTO user_role (user_id, role_code) VALUES
+        INSERT INTO med.user_role (user_id, role_code) VALUES
         <foreach item="code" collection="roleCodes" separator=",">
             (#{userId}, #{code})
         </foreach>
     </insert>
 
     <delete id="deleteRolesByUserId">
-        DELETE FROM user_role WHERE user_id = #{userId}
+        DELETE FROM med.user_role WHERE user_id = #{userId}
     </delete>
 
 </mapper>

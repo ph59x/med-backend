@@ -8,7 +8,7 @@ spring:
     hikari:
       username: root
       password: test123456
-    url: "jdbc:mysql://192.168.1.242:3306/med"
+    url: "jdbc:mysql://192.168.1.242:3306"
     driver-class-name: com.mysql.cj.jdbc.Driver
   rabbitmq:
     host: 192.168.1.242
@@ -31,3 +31,10 @@ sa-token:
   jwt-secret-key: kajsguioahgkldajdglja
   is-read-cookie: false
   timeout: 1800
+
+langchain4j:
+  open-ai:
+    chat-model:
+      api-key: sk-92e07234cf794db0abd84b35051f3d8a
+      base-url: https://api.deepseek.com/v1
+      model-name: deepseek-chat

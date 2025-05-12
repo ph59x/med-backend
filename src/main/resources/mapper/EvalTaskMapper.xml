@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.ph59.med.mapper.EvalTaskMapper">
     <insert id="insertTask" parameterType="xyz.ph59.med.entity.eval.EvalTaskInfo">
-        INSERT INTO eval_task (
+        INSERT INTO med.eval_task (
             task_id,
             create_time,
             status,
@@ -23,7 +23,7 @@
     </insert>
 
     <update id="updateTaskResult" parameterType="xyz.ph59.med.entity.eval.EvalTaskInfo">
-        UPDATE eval_task
+        UPDATE med.eval_task
         SET end_time = #{endTime},
             status = #{status},
             eval_cost_time = #{evalCostTime},
@@ -45,7 +45,7 @@
     </resultMap>
 
     <select id="selectTasks" parameterType="map" resultMap="EvalTaskInfoMap">
-        SELECT * FROM eval_task
+        SELECT * FROM med.eval_task
         <where>
             <if test="taskId != null">AND task_id = #{taskId}</if>
             <if test="callerId != null">AND caller_id = #{callerId}</if>
@@ -66,13 +66,13 @@
         status,
         NULL AS evalCost,
         result AS type
-        FROM eval_task
+        FROM med.eval_task
         WHERE task_id = #{taskId}
     </select>
 
     <select id="selectTargetIdByTaskId" resultType="Integer">
         SELECT target_id
-        FROM eval_task
+        FROM med.eval_task
         WHERE task_id = #{taskId}
     </select>
 </mapper>
