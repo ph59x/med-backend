@@ -10,7 +10,7 @@
     </parent>
     <groupId>xyz.ph59</groupId>
     <artifactId>med</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.1</version>
     <name>med</name>
     <description>med</description>
     <url/>
@@ -30,6 +30,7 @@
         <java.version>17</java.version>
         <sa-token.version>1.41.0</sa-token.version>
         <fastjson.version>2.0.57</fastjson.version>
+        <langchain4j.version>1.0.0-beta4</langchain4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -75,6 +76,14 @@
             <version>${sa-token.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-spring-boot-starter</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
@@ -133,6 +142,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--langchain4j的依赖清单-->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-bom</artifactId>
+                <version>${langchain4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
