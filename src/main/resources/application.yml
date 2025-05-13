@@ -33,8 +33,8 @@ sa-token:
   timeout: 1800
 
 langchain4j:
-  open-ai:
-    chat-model:
-      api-key: sk-92e07234cf794db0abd84b35051f3d8a
-      base-url: https://api.deepseek.com/v1
-      model-name: deepseek-chat
+  community:
+    dashscope:
+      chat-model:
+        api-key: sk-2197d790754d42baa008433429714ba9
+        model-name: qwen-turbo
