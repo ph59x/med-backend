@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD  Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="xyz.ph59.med.chatbot.mapper.ChatMemoryMapper">
+
+    <select id="queryContent" resultType="string">
+        SELECT content
+        FROM chatbot.messages
+        WHERE chat_id = #{chatId}
+    </select>
+
+    <insert id="createChat">
+        INSERT INTO chatbot.messages (user_id, chat_id, create_time, update_time, content)
+            VALUE (#{uid}, #{chatId}, #{time}, #{time}, #{content})
+    </insert>
+
+    <update id="updateChat">
+        UPDATE chatbot.messages
+        SET
+            update_time = #{time},
+            content = #{content}
+        WHERE chat_id = #{chatId}
+    </update>
+
+    <delete id="removeChat">
+        DELETE FROM chatbot.messages WHERE chat_id = #{chatId}
+    </delete>
+
+    <select id="chatExist">
+        SELECT EXISTS(
+            SELECT 1
+            FROM chatbot.messages
+            WHERE chat_id = #{chatId}
+        )
+    </select>
+</mapper>

@@ -23,7 +23,7 @@ tsdb:
     token: "d8gfMN7Q85weOROvOIdaz3SVoaWtJFOzeA47r6jL5Ewo44fC5rVCED9MPG0i7L_px0nkSK-TZjd9hsjq1bTKTg=="
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml, classpath:chatbot/mapper/*.xml
 
 sa-token:
   token-name: Authorization
