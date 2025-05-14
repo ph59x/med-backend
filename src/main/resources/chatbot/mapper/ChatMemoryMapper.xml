@@ -10,6 +10,11 @@
         FROM chatbot.messages
         WHERE chat_id = #{chatId}
     </select>
+    <select id="queryCreator" resultType="int">
+        SELECT user_id
+        FROM chatbot.messages
+        WHERE chat_id = #{chatId}
+    </select>
 
     <insert id="createChat">
         INSERT INTO chatbot.messages (user_id, chat_id, create_time, update_time, content)
