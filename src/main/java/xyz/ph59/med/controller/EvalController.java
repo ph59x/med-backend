@@ -49,7 +49,7 @@ public class EvalController {
         }
 
         try {
-            Object result = evalService.createTask(uid, start, end);
+            Object result = evalService.createTask(uid, StpUtil.getLoginIdAsInt(), start, end);
 
 
             return ResponseEntity.status(HttpStatus.CREATED)
