@@ -38,3 +38,8 @@ langchain4j:
       chat-model:
         api-key: sk-2197d790754d42baa008433429714ba9
         model-name: qwen-turbo
+  open-ai:
+    embedding-model:
+      base-url: "https://api.siliconflow.cn/v1/"
+      api-key: sk-asierdoletwgnpamxrkbgxskrjsclnbsnkgmtlbcdubbyjnv
+      model-name: "BAAI/bge-m3"

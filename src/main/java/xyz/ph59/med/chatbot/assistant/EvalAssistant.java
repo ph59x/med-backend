@@ -11,7 +11,8 @@ import dev.langchain4j.service.spring.AiServiceWiringMode;
         wiringMode = AiServiceWiringMode.EXPLICIT,
         chatModel = "qwenChatModel",
         chatMemoryProvider = "sqlMemoryProvider",
-        tools = "toolsConfig"
+        tools = "toolsConfig",
+        contentRetriever = "vectorContentRetriever"
 )
 public interface EvalAssistant {
 
