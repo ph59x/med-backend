@@ -13,6 +13,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import xyz.ph59.med.entity.DataPoint;
 import xyz.ph59.med.tsdb.TsdbConnector;
+import xyz.ph59.med.tsdb.query.builder.IotdbQueryBuilder;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -26,6 +27,7 @@ import java.util.List;
 public class IotdbConnector implements TsdbConnector {
     private final Session client;
     private final String queryPrefix;
+    private final IotdbQueryBuilder queryBuilder;
 
     public IotdbConnector(
             @Value("${tsdb.iotdb.host:localhost}") String host,
@@ -45,6 +47,7 @@ public class IotdbConnector implements TsdbConnector {
         client.setTimeZone("+08:00");
 
         queryPrefix = "root." + tableName + ".";
+        queryBuilder = new IotdbQueryBuilder(queryPrefix);
     }
 
     @Override
@@ -54,13 +57,12 @@ public class IotdbConnector implements TsdbConnector {
             @NonNull ZonedDateTime endTime
     ) {
         List<DataPoint> result = new ArrayList<>();
-        String path = queryPrefix + uid;
 
-        String sql = String.format(
-                "SELECT afm, afmFlag, fmFlag, fhr, fhrQuality, toco, tocoFlag FROM %s WHERE time >= %d AND time <= %d",
-                path, startTime.toInstant().toEpochMilli(), endTime.toInstant().toEpochMilli()
-        );
-
+        String sql = queryBuilder.forSimpleQuery()
+                .uid(uid)
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
         try {
             SessionDataSet dataSet = client.executeQueryStatement(sql);
 
@@ -104,12 +106,12 @@ public class IotdbConnector implements TsdbConnector {
             @NonNull ZonedDateTime endTime
     ) {
         List<Short[]> result = new ArrayList<>();
-        String path = queryPrefix + uid;
 
-        String sql = String.format(
-                "SELECT fhr, toco FROM %s WHERE time >= %d AND time <= %d",
-                path, startTime.toInstant().toEpochMilli(), endTime.toInstant().toEpochMilli()
-        );
+        String sql = queryBuilder.forEval()
+                .uid(uid)
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
 
         try {
             SessionDataSet dataSet = client.executeQueryStatement(sql);
