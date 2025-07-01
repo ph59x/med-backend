@@ -1,6 +1,14 @@
 spring:
   application:
     name: med
+  ai:
+    mcp:
+      server:
+        name: demo-server
+        type: async
+        instructions: "查询用户的胎心数据评估结果"
+        sse-endpoint: /sse
+        sse-message-endpoint: /mcp/message
   data:
     redis:
       host: 192.168.1.242

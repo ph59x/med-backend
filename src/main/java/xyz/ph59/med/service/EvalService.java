@@ -28,8 +28,12 @@ public class EvalService {
     private final TsdbConnector tsdbConnector;
     private final DataService dataService;
 
-    // TODO 故障处理
     public String createTask(int uid, ZonedDateTime start, ZonedDateTime end) {
+        return this.createTask(uid, StpUtil.getLoginIdAsInt(), start, end);
+    }
+
+    // TODO 故障处理
+    public String createTask(int uid, int creatorUid, ZonedDateTime start, ZonedDateTime end) {
         //查询数据
         List<Short[]> messageData = tsdbConnector.queryForEval(uid, start, end);
 
@@ -47,7 +51,7 @@ public class EvalService {
         taskInfo.setTaskId(messageId.toString());
         taskInfo.setTargetTimeStart(start.toLocalDateTime());
         taskInfo.setTargetTimeEnd(end.toLocalDateTime());
-        taskInfo.setCallerId(StpUtil.getLoginIdAsLong());
+        taskInfo.setCallerId((long) creatorUid);
         taskInfo.setCreateTime(LocalDateTime.now());
 
         dataService.writeEvalTask(taskInfo);

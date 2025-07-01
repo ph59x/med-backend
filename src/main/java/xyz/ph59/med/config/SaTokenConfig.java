@@ -24,7 +24,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
     public SaServletFilter getSaServletFilter() {
         return new SaServletFilter()
                 .addInclude("/**")
-                .addExclude("/auth/**")
+                .addExclude("/auth/**", "/sse", "/mcp/message")
                 .setAuth(object -> {
                     SaRouter.match("/**").check(StpUtil::checkLogin);
                 })
