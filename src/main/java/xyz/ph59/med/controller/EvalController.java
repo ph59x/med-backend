@@ -22,9 +22,9 @@ import java.util.UUID;
 public class EvalController {
     private final EvalService evalService;
 
-    @SaCheckPermission("TASK_CREATE")
-    @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
-    @CheckScope("TASK_CREATE")
+//    @SaCheckPermission("TASK_CREATE")
+//    @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
+//    @CheckScope("TASK_CREATE")
     @PostMapping
     public ResponseEntity<Result> createEvalTask(
             @RequestParam(value = "uid", required = false) Integer uid,
@@ -69,9 +69,9 @@ public class EvalController {
         }
     }
 
-    @SaCheckPermission("TASK_VIEW")
-    @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
-    @CheckScope("TASK_VIEW")
+//    @SaCheckPermission("TASK_VIEW")
+//    @SaCheckRole(value = {"USER", "DOCTOR", "DEPT_ADMIN"}, mode = SaMode.OR)
+//    @CheckScope("TASK_VIEW")
     @GetMapping
     public ResponseEntity<Result> queryTask(@RequestParam("task_id") String taskId) {
         return ResponseEntity.ok(

@@ -6,10 +6,10 @@ spring:
       host: 192.168.1.242
   datasource:
     hikari:
-      username: root
+      username: postgres
       password: test123456
-    url: "jdbc:mysql://192.168.1.242:3306/med"
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: "jdbc:postgresql://192.168.1.242:5432/med?currentSchema=public"
+    driver-class-name: org.postgresql.Driver
   rabbitmq:
     host: 192.168.1.242
     port: 5672

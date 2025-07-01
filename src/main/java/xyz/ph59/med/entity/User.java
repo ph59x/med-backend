@@ -10,6 +10,6 @@ public class User {
     private String username;
     private String hash;
     private LocalDateTime createTime;
-    private Integer disabled;
+    private boolean disabled;
     private Integer deptId;
 }

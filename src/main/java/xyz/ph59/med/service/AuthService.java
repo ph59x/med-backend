@@ -59,7 +59,6 @@ public class AuthService {
                 Duration.ofDays(7)
         );
 
-        // TODO 异步缓存用户权限
         permissionService.getUserPermission(user.getId());
 
         StpUtil.login(user.getId());

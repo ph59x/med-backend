@@ -17,7 +17,7 @@ import xyz.ph59.med.service.LogService;
 import xyz.ph59.med.util.IpUtil;
 
 @Aspect
-@Component
+//@Component
 @RequiredArgsConstructor
 public class AuditAspect {
     private final LogService logService;
